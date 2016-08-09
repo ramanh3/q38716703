@@ -34,9 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                .exceptionHandling()
                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                .and()
-             .csrf()
-             //Comment out to allow easy testing without csrf
-             .disable();
+             //disable csrf to allow easy testing 
+             .csrf().disable();
     }
 
     @Autowired
