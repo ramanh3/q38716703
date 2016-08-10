@@ -12,22 +12,29 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ImprovedUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        final String queryString = request.getQueryString();
-
-        if (!StringUtils.isEmpty(queryString)) {
-
-            final String usernameParameter = getUsernameParameter();
-            final String passwordParameter = getPasswordParameter();
-            if (
-                    queryString.contains(usernameParameter)
-                            || queryString.contains(passwordParameter)
-                    )
-                throw new AuthenticationServiceException("Query parameters for login are a prohibit, use message body only!");
-        }
-        return super.attemptAuthentication(request, response);
-
+    protected String obtainUsername(HttpServletRequest request) {
+        final String usernameParameter = getUsernameParameter();
+        validateQueryParameter(request, usernameParameter);
+        return super.obtainUsername(request);
     }
+
+    @Override
+    protected String obtainPassword(HttpServletRequest request) {
+        final String passwordParameter = getPasswordParameter();
+        validateQueryParameter(request, passwordParameter);
+        return super.obtainPassword(request);
+    }
+
+    private void validateQueryParameter(HttpServletRequest request, String usernameParameter) {
+        final String queryString = request.getQueryString();
+        if (!StringUtils.isEmpty(queryString)) {
+            if (queryString.contains(usernameParameter))
+                throw new AuthenticationServiceException("Query parameters for login are a prohibit, use message body only!");
+
+        }
+    }
+
 
 }
